@@ -11,13 +11,13 @@ Ansibleを使用して必要なソフトウェアのインストールと設定�
 
 ### Dockerコンテナ構成
 
-| コンテナ | 説明 |
-|---------|------|
-| Node.js | Node.js v24 アプリケーションサーバー（Astro SSR） |
-| Nginx | リバースプロキシ/Webサーバー（HLSファイル配信） |
-| FFmpeg | 動画のHLS変換処理用コンテナ |
-| Redis | コンテナ間連携用キャッシュサーバー |
-| Certbot | Let's Encrypt証明書取得用（オプション） |
+| コンテナ | バージョン | 説明 |
+|---------|------------|------|
+| Node.js | v24.0.0 (alpine) | アプリケーションサーバー（Astro SSR） |
+| Nginx | 1.28.1 (alpine) | リバースプロキシ/Webサーバー（HLSファイル配信） |
+| FFmpeg | 8.0.1 | 動画のHLS変換処理用コンテナ |
+| Redis | 7.4.2 | コンテナ間連携用キャッシュサーバー |
+| Certbot | 5.2.2 | Let's Encrypt証明書取得用（オプション） |
 
 ## 前提条件
 
@@ -40,13 +40,11 @@ Ansibleを使用して必要なソフトウェアのインストールと設定�
     │   ├── japanese.yml          # 日本語環境設定
     │   ├── redis.yml             # Redisコンテナ構築
     │   ├── ffmpeg.yml            # FFmpegコンテナ構築
-    │   ├── mariadb.yml           # MariaDBコンテナ構築（未使用）
     │   ├── nginx.yml             # Nginxコンテナ構築
     │   ├── certbot.yml           # Certbotコンテナ構築
     │   ├── nodejs.yml            # Node.jsコンテナ構築
     │   └── app.yml               # アプリケーションデプロイ
     └── containers/           # コンテナ設定
-        ├── mariadb/              # MariaDB用Dockerfile等（未使用）
         ├── nginx/                # Nginx用設定ファイル等
         ├── nodejs/               # Node.js用Dockerfile等
         ├── redis/                # Redis用Dockerfile等
