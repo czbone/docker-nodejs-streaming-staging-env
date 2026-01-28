@@ -1,0 +1,35 @@
+---
+- name: Create data directory
+  file:
+    path: '{{ docker_host_config_root }}/data'
+    state: directory
+    owner: root
+    group: root
+    mode: '0777'
+
+- name: Create original and hls directories
+  file:
+    path: '{{ docker_host_config_root }}/data/{{ item }}'
+    state: directory
+    owner: root
+    group: root
+    mode: '0777'
+  loop:
+    - original
+    - hls
+
+- name: Create FFmpeg container
+  docker_container:
+    name: ffmpeg-worker
+    image: jrottenberg/ffmpeg:latest
+    recreate: yes
+    state: started
+    restart_policy: always
+    networks:
+      - name: local-network
+    log_driver: journald
+    log_options:
+      tag: "{{ '{{' }}.ImageName{{ '}}' }}/{{ '{{' }}.Name{{ '}}' }}/{{ '{{' }}.ID{{ '}}' }}"
+    entrypoint: ["tail", "-f", "/dev/null"]
+    volumes:
+      - '{{ docker_host_config_root }}/data:/data'
