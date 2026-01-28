@@ -95,8 +95,8 @@ server {
         proxy_cache_bypass $http_upgrade;
 
         # プロキシ接続時のタイムアウト設定
-        proxy_connect_timeout 5s;
-        proxy_send_timeout 10s;
-        proxy_read_timeout 10s;
+        proxy_connect_timeout 60s;
+        proxy_send_timeout 300s;
+        proxy_read_timeout 300s;
     }
 }
