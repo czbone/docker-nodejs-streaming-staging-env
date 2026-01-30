@@ -1,6 +1,15 @@
 ---
-- name: Create Nodejs application .env file.
+- name: Create Nodejs application .env file (root)
   template: src='./containers/nodejs/templates/app_env.j2' dest='{{ docker_host_config_root }}/app/.env' owner=root group=root mode=0640
+
+- name: Check if monorepo web package exists
+  stat:
+    path: '{{ docker_host_config_root }}/app/packages/web'
+  register: web_package_exists
+
+- name: Create .env file for web package (monorepo)
+  template: src='./containers/nodejs/templates/app_env.j2' dest='{{ docker_host_config_root }}/app/packages/web/.env' owner=root group=root mode=0640
+  when: web_package_exists.stat.exists
 
 - name: Create build directory
   file:

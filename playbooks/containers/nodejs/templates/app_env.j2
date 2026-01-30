@@ -2,4 +2,13 @@
 #DATABASE_URL=mysql://{{ main_db_user }}:{{ main_db_password }}@mariadb:3306/{{ main_db_name }}
 
 # Session configuration
-SESSION_REDIS_URL=redis://redis:6379/
+#SESSION_REDIS_URL=redis://redis:6379/
+
+# セッション用
+SESSION_REDIS_URL=redis://redis:6379/0
+
+# 動画処理用
+VIDEO_QUEUE_REDIS_URL=redis://redis:6379/1
+
+# データディレクトリ（Docker環境では /data を指定）
+DATA_DIR=/data

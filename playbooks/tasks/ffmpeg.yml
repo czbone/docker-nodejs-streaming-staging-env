@@ -18,10 +18,34 @@
     - original
     - hls
 
-- name: Create FFmpeg container
+- name: Create FFmpeg build directory
+  file:
+    path: '{{ docker_host_config_root }}/containers/ffmpeg/build'
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Create FFmpeg Dockerfile
+  template:
+    src: './containers/ffmpeg/templates/Dockerfile.j2'
+    dest: '{{ docker_host_config_root }}/containers/ffmpeg/build/Dockerfile'
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Build FFmpeg image with Node.js
+  docker_image:
+    name: local/ffmpeg-worker
+    build:
+      path: '{{ docker_host_config_root }}/containers/ffmpeg/build'
+    source: build
+    force_source: yes
+
+- name: Create FFmpeg worker container
   docker_container:
     name: ffmpeg-worker
-    image: jrottenberg/ffmpeg:latest
+    image: local/ffmpeg-worker
     recreate: yes
     state: started
     restart_policy: always
@@ -30,6 +54,10 @@
     log_driver: journald
     log_options:
       tag: "{{ '{{' }}.ImageName{{ '}}' }}/{{ '{{' }}.Name{{ '}}' }}/{{ '{{' }}.ID{{ '}}' }}"
-    entrypoint: ["tail", "-f", "/dev/null"]
+    command: ["tail", "-f", "/dev/null"]
     volumes:
+      - '{{ docker_host_config_root }}/app:/app'
       - '{{ docker_host_config_root }}/data:/data'
+    env:
+      REDIS_HOST: "{{ docker_container_redis }}"
+      REDIS_PORT: "6379"
