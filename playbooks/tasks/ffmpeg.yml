@@ -44,7 +44,7 @@
 
 - name: Build FFmpeg image with Node.js
   docker_image:
-    name: local/ffmpeg-worker
+    name: local/ffmpeg
     build:
       path: '{{ docker_host_config_root }}/containers/ffmpeg/build'
     source: build
@@ -52,8 +52,8 @@
 
 - name: Create FFmpeg worker container
   docker_container:
-    name: ffmpeg-worker
-    image: local/ffmpeg-worker
+    name: ffmpeg
+    image: local/ffmpeg
     recreate: yes
     state: started
     restart_policy: always

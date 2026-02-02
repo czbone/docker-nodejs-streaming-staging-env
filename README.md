@@ -1,7 +1,9 @@
-# Docker環境構築（Astro動画配信システム）
+# Node.js(Astro)動画配信システム(Dockerコンテナ環境)
 
 Vagrantを使用してUbuntu 24.04上にDocker環境を自動構築するプロジェクトです。
 Ansibleを使用して必要なソフトウェアのインストールと設定を行い、GitHubから取得したAstroベースの動画配信システム（[astro-streaming-sample](https://github.com/czbone/astro-streaming-sample)）を自動的にビルド・実行するための実行環境を構築します。
+
+![Streaming Screenshot](https://github.com/user-attachments/assets/eb3aea02-dcbb-4622-a4d7-018d7547fc0b)
 
 ## 環境構成
 
@@ -48,6 +50,7 @@ Ansibleを使用して必要なソフトウェアのインストールと設定�
         ├── nginx/                # Nginx用設定ファイル等
         ├── nodejs/               # Node.js用Dockerfile等
         ├── redis/                # Redis用Dockerfile等
+        ├── ffmpeg/               # FFmpeg用設定ファイル等
         └── certbot/              # Certbot用設定ファイル等
 ```
 
@@ -94,7 +97,7 @@ sudo su -
 docker ps                    # 実行中のコンテナ一覧
 docker logs nodejs           # Node.jsコンテナのログ
 docker logs nginx            # Nginxコンテナのログ
-docker logs ffmpeg-worker    # FFmpegコンテナのログ
+docker logs ffmpeg           # FFmpegコンテナのログ
 docker logs redis            # Redisコンテナのログ
 docker logs certbot          # Certbotコンテナのログ（有効な場合）
 ```
