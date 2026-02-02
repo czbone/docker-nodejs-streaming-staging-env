@@ -134,65 +134,28 @@
     mode: 0755
     recurse: yes
 
-#
-# FFmpegコンテナへのワーカーデプロイ（モノレポ対応）
-#
-- name: Check if worker package exists (monorepo structure)
+- name: Check if worker directory exists
   stat:
-    path: '{{ docker_host_config_root }}/app/packages/worker'
-  register: worker_package_exists
+    path: '{{ app_worker_path }}'
+  register: worker_dir
 
-- name: Create worker directory structure in FFmpeg container
-  command: docker exec ffmpeg-worker mkdir -p /app/packages
-  when: worker_package_exists.stat.exists
+- name: Display repository structure
+  debug:
+    msg: "Worker directory exists: {{ worker_dir.stat.exists }}"
 
-- name: Copy monorepo workspace configuration
-  command: docker cp {{ docker_host_config_root }}/app/{{ item }} ffmpeg-worker:/app/
-  loop:
-    - package.json
-    - pnpm-workspace.yaml
-  when: worker_package_exists.stat.exists
-  ignore_errors: yes
+- name: Create .env file for web application (repository root)
+  template:
+    src: './containers/nodejs/templates/app_env.j2'
+    dest: '{{ app_root_path }}/.env'
+    owner: root
+    group: root
+    mode: '0640'
 
-- name: Copy shared package to FFmpeg container
-  command: docker cp {{ docker_host_config_root }}/app/packages/shared ffmpeg-worker:/app/packages/shared
-  when: worker_package_exists.stat.exists
-
-- name: Copy worker package to FFmpeg container
-  command: docker cp {{ docker_host_config_root }}/app/packages/worker ffmpeg-worker:/app/packages/worker
-  when: worker_package_exists.stat.exists
-
-- name: Create .env file for worker in FFmpeg container
-  command: |
-    docker exec ffmpeg-worker sh -c 'echo "VIDEO_QUEUE_REDIS_URL=redis://redis:6379/1" > /app/packages/worker/.env'
-  when: worker_package_exists.stat.exists
-
-- name: Install all workspace dependencies in FFmpeg container
-  command: docker exec -w /app ffmpeg-worker pnpm install
-  when: worker_package_exists.stat.exists
-
-- name: Build shared package in FFmpeg container
-  command: docker exec -w /app/packages/shared ffmpeg-worker pnpm build
-  when: worker_package_exists.stat.exists
-
-- name: Stop existing worker process in FFmpeg container (if any)
-  command: docker exec ffmpeg-worker pkill -f "tsx" || true
-  ignore_errors: yes
-  when: worker_package_exists.stat.exists
-
-- name: Find worker entry point
-  shell: |
-    if [ -f {{ docker_host_config_root }}/app/packages/worker/src/index.ts ]; then
-      echo "src/index.ts"
-    elif [ -f {{ docker_host_config_root }}/app/packages/worker/src/video-worker.ts ]; then
-      echo "src/video-worker.ts"
-    else
-      echo "src/index.ts"
-    fi
-  register: worker_entry_point
-  when: worker_package_exists.stat.exists
-
-- name: Start worker process in FFmpeg container
-  shell: |
-    docker exec -d ffmpeg-worker sh -c 'cd /app/packages/worker && VIDEO_QUEUE_REDIS_URL=redis://redis:6379/1 tsx {{ worker_entry_point.stdout }}'
-  when: worker_package_exists.stat.exists
+- name: Create .env file for worker
+  template:
+    src: './containers/nodejs/templates/app_env.j2'
+    dest: '{{ app_worker_path }}/.env'
+    owner: root
+    group: root
+    mode: '0640'
+  when: worker_dir.stat.exists

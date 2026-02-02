@@ -38,9 +38,6 @@
     - name: Create Docker container(redis)
       import_tasks: ./tasks/redis.yml
 
-    - name: Create Docker container(ffmpeg)
-      import_tasks: ./tasks/ffmpeg.yml
-
     # - name: Create Docker container(mariadb)
     #   import_tasks: ./tasks/mariadb.yml
 
@@ -56,6 +53,9 @@
 
     - name: Create Docker container(nodejs)
       import_tasks: ./tasks/nodejs.yml
+
+    - name: Create Docker container(ffmpeg)
+      import_tasks: ./tasks/ffmpeg.yml
 
     - name: Initialize Certbot
       shell: docker container start certbot

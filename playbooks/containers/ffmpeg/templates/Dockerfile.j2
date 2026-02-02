@@ -1,31 +1,29 @@
 # FFmpeg + Node.js環境
-FROM jrottenberg/ffmpeg:latest AS ffmpeg-base
+FROM jrottenberg/ffmpeg:latest
 
 # Node.jsとpnpmのインストール
-FROM node:{{ docker_container_node_version }}-alpine
-
-# FFmpegをベースイメージからコピー
-COPY --from=ffmpeg-base /usr/local/bin/ffmpeg /usr/local/bin/ffmpeg
-COPY --from=ffmpeg-base /usr/local/bin/ffprobe /usr/local/bin/ffprobe
-
-# 必要なライブラリをインストール
-RUN apk add --no-cache \
-    libgomp \
-    libstdc++ \
-    ca-certificates \
-    tzdata
+RUN apt-get update && \
+    apt-get install -y curl ca-certificates gnupg && \
+    curl -fsSL https://deb.nodesource.com/setup_{{ docker_container_node_version }}.x | bash - && \
+    apt-get install -y nodejs && \
+    npm install -g pnpm tsx && \
+    apt-get autoremove -y && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # タイムゾーン設定
 ENV TZ={{ docker_container_timezone }}
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-# pnpmのインストール
-RUN npm install -g pnpm tsx
+# ワーキングディレクトリを設定（ボリュームマウントされないディレクトリを使用）
+WORKDIR /root
 
-# ワーキングディレクトリの作成
-WORKDIR /app
+# エントリーポイントをリセット（jrottenberg/ffmpegのENTRYPOINTを上書き）
+ENTRYPOINT []
 
-# ディレクトリを作成（必要に応じて）
-RUN mkdir -p /app/packages
+# ワーカー起動スクリプトをコピー
+COPY worker-entrypoint.sh /worker-entrypoint.sh
+RUN chmod +x /worker-entrypoint.sh
 
-# エントリーポイント（後でワーカースクリプトを起動）
-CMD ["tail", "-f", "/dev/null"]
+# ワーカープロセスを自動起動
+CMD ["/worker-entrypoint.sh"]

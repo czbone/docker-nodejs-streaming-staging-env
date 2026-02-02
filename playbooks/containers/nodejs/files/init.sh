@@ -26,14 +26,6 @@ echo "Installing packages..."
 cd /app
 pnpm install
 
-# モノレポの場合、共有パッケージをビルド
-if [ -d "/app/packages/shared" ]; then
-  echo "Building shared package..."
-  cd /app/packages/shared
-  pnpm build
-  cd /app
-fi
-
 # Prisma クライアントの生成
 # echo "Generating Prisma client..."
 # pnpm db:generate
@@ -56,23 +48,8 @@ fi
 
 # アプリケーションのビルド
 echo "Building application..."
-if [ -d "/app/packages/web" ]; then
-  echo "Building web package (monorepo structure)..."
-  cd /app/packages/web
-  pnpm build
-  cd /app
-else
-  echo "Building application (standard structure)..."
-  pnpm build
-fi
+pnpm build
 
 # アプリケーション起動
 echo "Starting application..."
-if [ -d "/app/packages/web" ]; then
-  echo "Starting web package (monorepo structure)..."
-  cd /app/packages/web
-  exec pnpm start
-else
-  echo "Starting application (standard structure)..."
-  exec pnpm start
-fi
+exec pnpm start

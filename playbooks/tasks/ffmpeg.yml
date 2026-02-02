@@ -26,6 +26,14 @@
     group: root
     mode: '0755'
 
+- name: Copy worker entrypoint script
+  copy:
+    src: './containers/ffmpeg/files/worker-entrypoint.sh'
+    dest: '{{ docker_host_config_root }}/containers/ffmpeg/build/worker-entrypoint.sh'
+    owner: root
+    group: root
+    mode: '0755'
+
 - name: Create FFmpeg Dockerfile
   template:
     src: './containers/ffmpeg/templates/Dockerfile.j2'
@@ -54,10 +62,11 @@
     log_driver: journald
     log_options:
       tag: "{{ '{{' }}.ImageName{{ '}}' }}/{{ '{{' }}.Name{{ '}}' }}/{{ '{{' }}.ID{{ '}}' }}"
-    command: ["tail", "-f", "/dev/null"]
     volumes:
-      - '{{ docker_host_config_root }}/app:/app'
+      - '{{ app_worker_path }}:/app'  # Worker scripts directory
       - '{{ docker_host_config_root }}/data:/data'
     env:
+      VIDEO_QUEUE_REDIS_URL: "redis://{{ docker_container_redis }}:6379/1"
+      DATA_DIR: "/data"
       REDIS_HOST: "{{ docker_container_redis }}"
       REDIS_PORT: "6379"

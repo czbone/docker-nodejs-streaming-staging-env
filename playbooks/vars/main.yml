@@ -6,6 +6,7 @@ docker_container_node: nodejs
 docker_container_redis: redis
 docker_container_nginx: nginx
 docker_container_certbot: certbot
+docker_container_ffmpeg: ffmpeg
 
 #
 # Docker container configuration
@@ -39,3 +40,10 @@ app_repo_owner: "czbone"
 app_repo_name: "astro-streaming-sample"
 app_repo_url: "https://github.com/{{ app_repo_owner }}/{{ app_repo_name }}"
 app_repo_api_url: "https://api.github.com/repos/{{ app_repo_owner }}/{{ app_repo_name }}"
+
+#
+# Application configuration
+#
+app_root_path: '{{ docker_host_config_root }}/app'
+app_worker_path: '{{ app_root_path }}/worker'
+
