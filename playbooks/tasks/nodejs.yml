@@ -38,8 +38,6 @@
     recreate: yes
     state: started
     restart_policy: always
-    #restart_policy: on-failure
-    #restart_retries: 3
     working_dir: /app
     networks:
       - name: local-network
@@ -48,8 +46,5 @@
       tag: "{{ '{{' }}.ImageName{{ '}}' }}/{{ '{{' }}.Name{{ '}}' }}/{{ '{{' }}.ID{{ '}}' }}"
     volumes:
       - '{{ app_root_path }}:/app'  # Nodejs application (repository root)
-      - '/var/run/docker.sock:/var/run/docker.sock'
+#      - '/var/run/docker.sock:/var/run/docker.sock'
       - '{{ docker_host_config_root }}/data:/data'
-    env:
-      VIDEO_QUEUE_REDIS_URL: "redis://{{ docker_container_redis }}:6379/1"
-      DATA_DIR: "/data"

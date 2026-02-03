@@ -57,6 +57,7 @@
     recreate: yes
     state: started
     restart_policy: always
+    working_dir: /app
     networks:
       - name: local-network
     log_driver: journald
@@ -65,8 +66,3 @@
     volumes:
       - '{{ app_worker_path }}:/app'  # Worker scripts directory
       - '{{ docker_host_config_root }}/data:/data'
-    env:
-      VIDEO_QUEUE_REDIS_URL: "redis://{{ docker_container_redis }}:6379/1"
-      DATA_DIR: "/data"
-      REDIS_HOST: "{{ docker_container_redis }}"
-      REDIS_PORT: "6379"

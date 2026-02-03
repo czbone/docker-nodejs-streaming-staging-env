@@ -15,9 +15,6 @@ RUN apt-get update && \
 ENV TZ={{ docker_container_timezone }}
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-# ワーキングディレクトリを設定（ボリュームマウントされないディレクトリを使用）
-WORKDIR /root
-
 # エントリーポイントをリセット（jrottenberg/ffmpegのENTRYPOINTを上書き）
 ENTRYPOINT []
 

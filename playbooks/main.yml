@@ -38,9 +38,6 @@
     - name: Create Docker container(redis)
       import_tasks: ./tasks/redis.yml
 
-    # - name: Create Docker container(mariadb)
-    #   import_tasks: ./tasks/mariadb.yml
-
     - name: Create Docker container(nginx)
       import_tasks: ./tasks/nginx.yml
 
